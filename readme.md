@@ -5,7 +5,8 @@ Note : Please do not use for illegal activities.
 
 Version : 0.1
 
-* Usage: ./shark.sh
+* Usage: $ ./shark.sh
+    - Result file -> $ ./shark.sh > shark_result.txt
 
 * Shark Abilities:
     * System Information

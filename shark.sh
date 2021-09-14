@@ -112,6 +112,8 @@ networking() {
         netstat -nupl
         
     fi
+    echo "${GREEN}Cheking Nameservers"
+    cat /etc/resolv.conf | grep "nameserver" 2>/dev/null
     sleep 1
     echo "-------------------------"
     echo ""
@@ -138,11 +140,48 @@ suidchecks() {
     echo ""
 }
 
+sshfiles() {
+    echo "${RED}Checking SSH Files on Server"
+    find / -name "*id_rsa*" -o -name "known_hosts" -o -name "authorized_keys" 2>/dev/null
+    echo ""
+    echo "${RED}Checking SSH Configuration on Server"
+    cat /etc/ssh/sshd_config 2>/dev/null
+    echo "-------------------------"
+    echo ""
+}
+
+
+sqlenums() {
+    echo "${RED}Enumurating SQL Servers"
+    mysql --version 2>/dev/null
+    psql -V 2>/dev/null
+}
+
+webserverenums() {
+    echo "${RED}Enumurating WebServers"
+    echo "${GREEN}"
+    apache2 -v 2>/dev/null; httpd -v 2>/dev/null
+    grep -i 'user\|group' /etc/apache2/envvars 2>/dev/null |awk '{sub(/.*\export /,"")}1' 2>/dev/null
+    nginx -v 2>/dev/null
+    echo "${RED}Cheking WebServer Passwords"
+    find / -name ".htpasswd" 2>/dev/null
+    sleep 1
+    echo "-------------------------"
+    echo ""
+}
+
+dockerenums() {
+    echo "${RED}Docker Installation Cheking"
+    id | grep -i docker 2>/dev/null
+    docker --version
+    echo "${GREEN}Searching Docker Files"
+    find / -name "*DockerFile*" -name "*docker-compose.yml*" 2>/dev/null
+}
+
 report() {
     now=$(date +"%T")
     echo "${GREEN} Shark Scan Complete! -> $now"
-}   
-
+}
 
 startShark() {
     info
@@ -152,6 +191,10 @@ startShark() {
     networking
     procs
     suidchecks
+    sshfiles
+    sqlenums
+    webserverenums
+    dockerenums
     report
 }
 
