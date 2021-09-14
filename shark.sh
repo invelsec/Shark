@@ -1,31 +1,36 @@
 #!/bin/bash
 # Shark - An Awesome Linux Enum Suite
+RED='\033[0;31m'
+GREEN='\e[32m'
+now=$(date +"%T")
+
 info() {
-    echo "Welcome To Shark Enum Suite"
-    echo "github.com/invelsec - Burak Ayvaz"
+    echo "${GREEN} Welcome To Shark Enum Suite"
+    echo "${RED} github.com/invelsec - Burak Ayvaz"
     version="0.1"
-    echo "Version -> $version"
-    echo "-------------------------"
+    echo "${RED} Version -> $version"
+    echo "${GREEN} Shark Scan Started -> ${now}"
     echo ""
+    sleep 5
 }
 
 simpleChecks() {
-    echo "Current User"
+    echo "${RED} Current User"
     whoami
     
-    echo "User Groups"
+    echo "${RED} User Groups"
     id
     
     passwd="cat /etc/passwd 2>/dev/null"
     if [ "$passwd" ];then
-        echo "Passwd Data "
-        echo "$passwd"
+        echo "${GREEN} Passwd Data "
+        cat /etc/passwd
         
     fi
     shadow="cat /etc/shadow 2>/dev/null"
     if [ "$shadow" ];then
-        echo "Shadow Data "
-        echo "$shadow"
+        echo "${GREEN} Shadow Data "
+        cat /etc/shadow
         
     fi
     sleep 1
@@ -34,14 +39,15 @@ simpleChecks() {
 }
 
 crons() {
+    echo "${RED} Enumurating CronJobs"
     cron="ls -la /etc/crontab 2>/dev/null"
     if [ "$cron" ];then
-        echo "Cronjobs Configured"
+        echo "${GREEN} Cronjobs Configured"
     fi
     cronread="cat /etc/crontab 2>/dev/null"
     if [ "$cronread" ];then
-       echo "CronJobs"
-       echo "$cronread"
+       echo "${GREEN} CronJobs"
+       cat /etc/crontab
        
     fi
     sleep 1
@@ -50,23 +56,23 @@ crons() {
 }
 
 sysinfo() {
-    echo "SysInfo"
+    echo "${RED} SysInfo"
     uname="uname -a 2>/dev/null" 
     proc="cat /proc/version 2>/dev/null"
     host="hostname 2>/dev/null"
     if [ "$uname" ];then
-        echo "Uname Info"
-        echo "$uname"
+        echo "${GREEN} Uname Info"
+        uname -a
         
     fi
     if [ "$proc" ];then
-        echo "Proc Info"
-        echo "$proc"
+        echo "${GREEN} Proc Info"
+        cat /proc/version
         
     fi
     if [ "$host" ];then
-        echo "Hostname"
-        echo "$host"
+        echo "${GREEN} Hostname"
+        hostname
         
     fi
     sleep 1
@@ -75,35 +81,35 @@ sysinfo() {
 }
 
 networking() {
-    echo "Enumurating the network information"
+    echo "${RED} Enumurating the network information"
     echo "Ifconfig"
-    ifconfig -a
+    ifconfig
     
-    echo "Arp List"
+    echo "${GREEN} Arp List"
     arp -a
     
-    echo "Current Public IP Address"
+    echo "${GREEN} Current Public IP Address"
     curl ifconfig.me
     
     ufwLocation="/usr/sbin/ufw"
     ipTables="/etc/sysconfig/iptables"
     if [ -f $ufwLocation ];then
-        echo "Ufw Found!"
+        echo "${GREEN} Ufw Found!"
     elif [ -f $ipTables ];then
-        echo "IpTables Found!"
+        echo "${GREEN} IpTables Found!"
     fi
-    echo "Checking TCP Listens"
+    echo "${GREEN} Checking TCP Listens"
     tcplist="netstat -ntlp 2>/dev/null"
     if [ "$tcplist" ];then
-        echo "TCP Routes"
-        echo "$tcplist"
+        echo "${GREEN} TCP Routes"
+        netstat -ntlp
         
     fi
-    echo "Cheking UDP Listens"
+    echo "${GREEN} Cheking UDP Listens"
     udplist="netstat -nupl 2>/dev/null"
     if [ "$udplist" ];then
-        echo "UDP Routes"
-        echo "$udplist"
+        echo "${GREEN} UDP Routes"
+        netstat -nupl
         
     fi
     sleep 1
@@ -112,11 +118,12 @@ networking() {
 }
 
 procs() {
+    echo "${RED} Enumurating Active Process"
     psa="ps aux 2>/dev/null"
     if [ "$psa" ];then
-        echo "Active Procs"
-        echo "$psa"
-        
+        echo "${GREEN} Active Procs"
+        ps aux
+        echo "${Green} End Active Procs"
     fi
     sleep 1
     echo "-------------------------"
@@ -124,7 +131,7 @@ procs() {
 }
 
 suidchecks() {
-    echo "Checking All Suid Files"
+    echo "${RED} Checking All Suid Files"
     find / -perm -u=s -type f 2>/dev/null
     sleep 1
     echo "-------------------------"
@@ -133,7 +140,7 @@ suidchecks() {
 
 report() {
     now=$(date +"%T")
-    echo "Shark Scan Complete! -> $now"
+    echo "${GREEN} Shark Scan Complete! -> $now"
 }   
 
 
